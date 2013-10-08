@@ -12,8 +12,4 @@ describe Page do
     Page::DECKS.first.should include("https://")
   end
 
-  it "should create Deck instances" do
-    pending
-  end
-
 end
