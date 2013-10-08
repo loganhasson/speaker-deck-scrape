@@ -13,7 +13,7 @@ class SpeakerDeck
 
   def initialize
     @noko_doc = Nokogiri::HTML(open(MAIN_URL))
-    @max_page = 1 #@noko_doc.css('.last a').attr("href").value.scan(/\d/).join.to_i
+    @max_page = @noko_doc.css('.last a').attr("href").value.scan(/\d/).join.to_i
   end
 
   def make_pages_array
@@ -37,4 +37,3 @@ speaker_deck = SpeakerDeck.new
 speaker_deck.make_pages_array
 speaker_deck.create_pages
 Page.create_decks
-Page.download_pdfs

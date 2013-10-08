@@ -32,7 +32,7 @@ class Page
         Deck.new(deck)
         sleep(0.5)
       rescue
-        puts deck + "was not saved."
+        puts deck + " was not saved."
       end
     end
   end

@@ -68,7 +68,8 @@ class Deck
         category TEXT,
         url TEXT,
         stars INTEGER,
-        views INTEGER)"
+        views INTEGER,
+        pdf TEXT)"
 
       speaker_deck.execute "INSERT INTO decks (title,
         author,
@@ -76,13 +77,14 @@ class Deck
         category,
         url,
         stars,
-        views) VALUES (?,?,?,?,?,?,?)", [self.title,
-                                         self.author,
-                                         self.date,
-                                         self.category,
-                                         self.link,
-                                         self.stars,
-                                         self.views]
+        views) VALUES (?,?,?,?,?,?,?,?)", [self.title,
+                                           self.author,
+                                           self.date,
+                                           self.category,
+                                           self.link,
+                                           self.stars,
+                                           self.views,
+                                           self.pdf]
 
       puts self.title + " saved!"
     ensure
