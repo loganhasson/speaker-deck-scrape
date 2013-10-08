@@ -55,6 +55,7 @@ class Deck
 
   def scrape_pdf
     @pdf = self.noko_doc.css('a[id="share_pdf"]').attr('href').text
+    system("mkdir -p pdfs")
     system("wget #{@pdf} -O pdfs/#{@pdf.split('/').last}")
   end
 
