@@ -1,6 +1,7 @@
 require 'open-uri'
 require 'nokogiri'
 require 'pry'
+require 'chronic'
 
 class Deck
 
@@ -16,7 +17,7 @@ class Deck
   def scrape
     # scrape_title
     # scrape_author
-    scrape_date
+    # scrape_date
     # scrape_stars
     # scrape_views
     scrape_category
@@ -32,10 +33,10 @@ class Deck
   #   puts "Author: " + self.author
   # end
 
-  def scrape_date
-    @date = self.noko_doc.css('.talk-details p mark')
-    puts self.date
-  end
+  # def scrape_date
+  #   @date = self.noko_doc.css('#talk-details p mark').text[/.*\d{4}/].strip
+  #   puts Chronic.parse(self.date)
+  # end
 
   # def scrape_stars
   #   @stars = self.noko_doc.css('.stargazers').children.first.text.scan(/\d/).join.to_i
