@@ -14,23 +14,23 @@ class Deck
   end
   
   def scrape
-    scrape_title
-    scrape_author
+    # scrape_title
+    # scrape_author
     scrape_date
     # scrape_stars
     # scrape_views
     scrape_category
   end
 
-  def scrape_title
-    @title = self.noko_doc.css('#talk-details h1').text.split(' ').join(' ')
-    puts "Title: " + self.title
-  end
+  # def scrape_title
+  #   @title = self.noko_doc.css('#talk-details h1').text.strip.split(' ').join(' ')
+  #   puts "Title: " + self.title
+  # end
 
-  def scrape_author
-    @author = self.noko_doc.css('.talk-details h2 a')
-    puts self.author
-  end
+  # def scrape_author
+  #   @author = self.noko_doc.css('#talk-details h2 a').text.strip
+  #   puts "Author: " + self.author
+  # end
 
   def scrape_date
     @date = self.noko_doc.css('.talk-details p mark')
