@@ -77,6 +77,8 @@ class Deck
                                          self.link,
                                          self.stars,
                                          self.views]
+
+      puts self.title + "saved!"
     ensure
       speaker_deck.close if speaker_deck
     end

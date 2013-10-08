@@ -21,8 +21,8 @@ class Page
   end
 
   def create_decks
-   DECKS.each_with_index do |deck, i|
-      Deck.new(deck) if i == 1
+   DECKS.each do |deck|
+      Deck.new(deck)
     end
   end
 
