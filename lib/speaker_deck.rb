@@ -21,8 +21,8 @@ class SpeakerDeck
   end
 
   def create_pages
-    PAGES.each do |page|
-      Page.new("https://speakerdeck.com/p/all?page=#{page}")
+    PAGES.each_with_index do |page, i|
+      Page.new("https://speakerdeck.com/p/all?page=#{page}") if i == 1
     end
   end
 

@@ -2,6 +2,8 @@ require 'open-uri'
 require 'nokogiri'
 require 'pry'
 
+require_relative './deck.rb'
+
 class Page
 
   attr_accessor :url, :noko_doc, :link
@@ -15,6 +17,13 @@ class Page
     @link = "https://speakerdeck.com/#{@noko_doc.css('.talk-listing-meta .title a').attr("href").value}"
     PAGES << self
     DECKS << @link
+    create_decks
+  end
+
+  def create_decks
+   DECKS.each_with_index do |deck, i|
+      Deck.new(deck) if i == 1
+    end
   end
 
 end
