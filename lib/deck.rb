@@ -6,7 +6,7 @@ require 'sqlite3'
 
 class Deck
 
-  attr_accessor :url, :noko_doc, :title, :author, :date, :stars, :views, :category, :link
+  attr_accessor :url, :noko_doc, :title, :author, :date, :stars, :views, :category, :link, :pdf
 
   DECKS = []
 
@@ -26,6 +26,7 @@ class Deck
     scrape_stars
     scrape_views
     scrape_category
+    scrape_pdf
   end
 
   def scrape_title
@@ -50,6 +51,11 @@ class Deck
 
   def scrape_category
     @category = self.noko_doc.css('#talk-details p mark a').text.strip
+  end
+
+  def scrape_pdf
+    @pdf = self.noko_doc.css('a[id="share_pdf"]').attr('href').text
+    system("wget #{@pdf} -O pdfs/#{@pdf.split('/').last}")
   end
 
   def save
