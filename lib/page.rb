@@ -16,7 +16,11 @@ class Page
     @noko_doc = Nokogiri::HTML(open(url))
     PAGES << self
     get_links
-    puts PAGES.size
+    if PAGES.size % 50 == 0
+      puts PAGES.size
+    else
+      print '.'
+    end
   end
 
   def get_links
