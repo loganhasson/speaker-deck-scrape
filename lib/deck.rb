@@ -38,8 +38,8 @@ class Deck
   end
 
   def scrape_stars
-    @stars = self.noko_doc.css('.stargazers') #(need to scan for digits)scan(/\d/).join.to_i
-    puts self.stars
+    @stars = self.noko_doc.css('.stargazers').children.first.text.scan(/\d/).join.to_i
+    puts "Stars: " + self.stars.to_s
   end
 
   # def scrape_views
