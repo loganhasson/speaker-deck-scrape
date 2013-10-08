@@ -23,6 +23,7 @@ class SpeakerDeck
   def create_pages
     PAGES.each do |page|
       Page.new("https://speakerdeck.com/p/all?page=#{page}")
+      sleep(0.1)
     end
   end
 

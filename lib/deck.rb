@@ -14,7 +14,7 @@ class Deck
     @url = url
     @noko_doc = Nokogiri::HTML(open(url))
     scrape
-    @link = "https://speakerdeck.com/#{@noko_doc.css('.talk-listing-meta .title a').attr("href").value}"
+    @link = "https://speakerdeck.com#{@noko_doc.css('.talk-listing-meta .title a').attr("href").value}"
     DECKS << self
     save
   end
@@ -78,10 +78,11 @@ class Deck
                                          self.stars,
                                          self.views]
 
-      puts self.title + "saved!"
+      puts self.title + " saved!"
     ensure
       speaker_deck.close if speaker_deck
     end
+    DECKS.delete(self)
   end
 
 end

@@ -14,13 +14,10 @@ class Page
   def initialize(url)
     @url = url
     @noko_doc = Nokogiri::HTML(open(url))
-    PAGES << self
+    PAGES << 1
     get_links
-    if PAGES.size % 50 == 0
-      puts PAGES.size
-    else
-      print '.'
-    end
+    system('clear')
+    puts "[#{((PAGES.size.to_f/SpeakerDeck::PAGES.size)*100).round(2)}%]"
   end
 
   def get_links
@@ -30,8 +27,13 @@ class Page
   end
 
   def self.create_decks
-   DECKS.each do |deck|
-      Deck.new(deck)
+    DECKS.each do |deck|
+      begin
+        Deck.new(deck)
+        sleep(0.5)
+      rescue
+        puts deck + "was not saved."
+      end
     end
   end
 
