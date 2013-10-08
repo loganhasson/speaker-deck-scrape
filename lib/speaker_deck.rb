@@ -35,3 +35,4 @@ end
 speaker_deck = SpeakerDeck.new
 speaker_deck.make_pages_array
 speaker_deck.create_pages
+Page.create_decks

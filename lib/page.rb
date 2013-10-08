@@ -14,13 +14,17 @@ class Page
   def initialize(url)
     @url = url
     @noko_doc = Nokogiri::HTML(open(url))
-    @link = "https://speakerdeck.com/#{@noko_doc.css('.talk-listing-meta .title a').attr("href").value}"
     PAGES << self
-    DECKS << @link
-    create_decks
+    get_links
   end
 
-  def create_decks
+  def get_links
+    @noko_doc.css('.talk-listing-meta').each do |deck|
+      DECKS << "https://speakerdeck.com/#{deck.css('.title a').attr("href").value}"
+    end
+  end
+
+  def self.create_decks
    DECKS.each do |deck|
       Deck.new(deck)
     end
