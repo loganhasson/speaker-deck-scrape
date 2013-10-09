@@ -36,6 +36,10 @@ class SpeakerDeck
     end
   end
 
+  def self.sweep
+    # Pending
+  end
+
   def self.clear_db
     begin
       speaker_deck = SQLite3::Database.new( "speaker_deck_drb.db" )
