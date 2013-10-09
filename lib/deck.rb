@@ -11,12 +11,15 @@ class Deck
 
   @@count = 0
 
+  DECKS = []
+
   def initialize(url)
     @url = url
+    puts "Crawling #{@url}"
     @noko_doc = Nokogiri::HTML(open(url))
+    DECKS << self
     scrape
     @link = "https://speakerdeck.com#{@noko_doc.css('.talk-listing-meta .title a').attr("href").value}"
-    save
   end
   
   def scrape
@@ -36,6 +39,14 @@ class Deck
     scrape_views
     scrape_category
     scrape_pdf
+  end
+
+  def self.all
+    DECKS
+  end
+
+  def self.reset_all
+    DECKS.clear
   end
 
   def scrape_title
@@ -64,13 +75,13 @@ class Deck
 
   def scrape_pdf
     @pdf = self.noko_doc.css('a[id="share_pdf"]').attr('href').text
-    system("mkdir -p pdfs")
-    system("wget #{@pdf} -O pdfs/#{@pdf.split('/').last}")
+    # system("mkdir -p pdfs")
+    # system("wget #{@pdf} -O pdfs/#{@pdf.split('/').last}")
   end
 
   def save
     begin
-      speaker_deck = SQLite3::Database.new( "speaker_deck.db" )
+      speaker_deck = SQLite3::Database.new( "speaker_deck_drb.db" )
       speaker_deck.execute "CREATE TABLE IF NOT EXISTS decks(id INTEGER PRIMARY KEY AUTOINCREMENT,
         title TEXT,
         author TEXT,
@@ -96,8 +107,7 @@ class Deck
                                          self.stars,
                                          self.views,
                                          self.pdf]
-
-      puts self.title + " saved!"
+    puts "Saved to database #{self.title}."
     ensure
       speaker_deck.close if speaker_deck
     end

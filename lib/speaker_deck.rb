@@ -1,39 +1,62 @@
 require 'open-uri'
 require 'nokogiri'
 require 'pry'
-require_relative './page.rb'
+require 'drb/drb'
+
+require_relative 'deck'
 
 class SpeakerDeck
 
-  attr_accessor :max_page, :noko_doc
-
-  MAIN_URL = "https://speakerdeck.com/p/all"
+  attr_accessor :max_page, :noko_doc, :url
 
   PAGES = []
 
-  def initialize
-    @noko_doc = Nokogiri::HTML(open(MAIN_URL))
-    @max_page = @noko_doc.css('.last a').attr("href").value.scan(/\d/).join.to_i
+  def initialize(url)
+    @url = url
+    @noko_doc = Nokogiri::HTML(open(url))
+    @max_page = 5 # @noko_doc.css('.last a').attr("href").value.scan(/\d/).join.to_i
+    make_pages
   end
 
-  def make_pages_array
-    (1..self.max_page).each {|num| PAGES << num}
+  def make_pages
+    (1..max_page).each { |page| PAGES[page] = :pending }
   end
 
-  def create_pages
-    PAGES.each do |page|
-      Page.new("https://speakerdeck.com/p/all?page=#{page}")
-      sleep(0.1)
+  def get_next_page
+    page = PAGES.find_index { |i| i == :pending }
+    puts "Client requesting page ##{page}"
+    if page
+      { 
+        :page => page,
+        :url => "https://speakerdeck.com/p/all?page=#{page}"
+      }
+    else
+      nil
     end
   end
 
-  def self.delete_pages
-    PAGES.clear
+  def update_page(page, decks)
+    puts "Received update from client (#{page}: #{decks.size})"
+    decks.each &:save
+    PAGES[page] = :complete
   end
+
+  # def self.clean_up
+  #   PAGES.clear
+  # end
 
 end
 
-speaker_deck = SpeakerDeck.new
-speaker_deck.make_pages_array
-speaker_deck.create_pages
-Page.create_decks
+ADDRESS="druby://localhost:8787"
+
+FRONT_OBJECT=SpeakerDeck.new("https://speakerdeck.com/p/all")
+
+#$SAFE = 1   # disable eval() and friends
+
+DRb.start_service(ADDRESS, FRONT_OBJECT)
+DRb.thread.join
+
+# speaker_deck = SpeakerDeck.new
+# speaker_deck.make_pages_array
+# speaker_deck.create_pages
+# Page.create_decks
