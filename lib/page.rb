@@ -7,11 +7,12 @@ require_relative 'deck'
 
 class Page
 
-  attr_accessor :url, :noko_doc, :link
+  attr_accessor :url, :noko_doc, :link, :client
 
 
-  def initialize(url)
+  def initialize(url, client)
     @url = url
+    @client = client
     @noko_doc = Nokogiri::HTML(open(url))
     @decks = []
     get_links
@@ -26,12 +27,7 @@ class Page
 
   def create_decks
     @decks.each do |deck|
-      begin
-        Deck.new(deck)
-        # sleep(0.5)
-      rescue
-        puts deck + " was not saved."
-      end
+      Deck.new(deck, self.client)
     end
   end
 
@@ -43,8 +39,8 @@ DRb.start_service
 page_service = DRbObject.new_with_uri(ADDRESS)
 
 while page_data = page_service.get_next_page
-  Page.new(page_data[:url])
+  Page.new(page_data[:url], ARGV.first)
   puts "Processing page #{page_data[:page]} at #{page_data[:url]}"
-  page_service.update_page(page_data[:page], Deck.all)
+  page_service.update_page(page_data[:page], Deck.all, ARGV.first)
   Deck.reset_all
 end

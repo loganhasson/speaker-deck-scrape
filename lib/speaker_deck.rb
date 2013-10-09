@@ -14,7 +14,7 @@ class SpeakerDeck
   def initialize(url)
     @url = url
     @noko_doc = Nokogiri::HTML(open(url))
-    @max_page = 5 # @noko_doc.css('.last a').attr("href").value.scan(/\d/).join.to_i
+    @max_page = @noko_doc.css('.last a').attr("href").value.scan(/\d/).join.to_i
     make_pages
   end
 
@@ -26,6 +26,7 @@ class SpeakerDeck
     page = PAGES.find_index { |i| i == :pending }
     puts "Client requesting page ##{page}"
     if page
+      PAGES[page] = :crawling
       { 
         :page => page,
         :url => "https://speakerdeck.com/p/all?page=#{page}"
@@ -35,8 +36,17 @@ class SpeakerDeck
     end
   end
 
-  def update_page(page, decks)
-    puts "Received update from client (#{page}: #{decks.size})"
+  def self.clear_db
+    begin
+      speaker_deck = SQLite3::Database.new( "speaker_deck_drb.db" )
+      speaker_deck.execute "DELETE FROM decks;"
+    ensure
+      speaker_deck.close if speaker_deck
+    end
+  end
+  
+  def update_page(page, decks, client)
+    puts "Received update from #{client} (#{page}: #{decks.size})"
     decks.each &:save
     PAGES[page] = :complete
   end
@@ -46,6 +56,19 @@ class SpeakerDeck
   # end
 
 end
+
+  speaker_deck = SQLite3::Database.new( "speaker_deck_drb.db" )
+        speaker_deck.execute "CREATE TABLE IF NOT EXISTS decks(id INTEGER PRIMARY KEY AUTOINCREMENT,
+          title TEXT,
+          author TEXT,
+          date DATE,
+          category TEXT,
+          url TEXT,
+          stars INTEGER,
+          views INTEGER,
+          pdf TEXT,
+          client TEXT)"
+SpeakerDeck.clear_db
 
 ADDRESS="druby://localhost:8787"
 

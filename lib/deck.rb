@@ -7,14 +7,16 @@ require 'colorize'
 
 class Deck
 
-  attr_accessor :url, :noko_doc, :title, :author, :date, :stars, :views, :category, :link, :pdf
+  attr_accessor :url, :noko_doc, :title, :author, :date, :stars, :views,
+                :category, :link, :pdf, :client
 
   @@count = 0
 
   DECKS = []
 
-  def initialize(url)
+  def initialize(url, client)
     @url = url
+    @client = client
     puts "Crawling #{@url}"
     @noko_doc = Nokogiri::HTML(open(url))
     DECKS << self
@@ -23,13 +25,12 @@ class Deck
   end
   
   def scrape
-    system('clear')
     @@count += 1
-    puts "Overall Progress"
-    print "#{((@@count.to_f/Page::DECKS.size)*100).round(2)}% ".red
-    print "["
-    print ("="*((@@count.to_f/Page::DECKS.size)*50.floor) + ">").ljust(50, ' ')
-    puts "]"
+    # puts "Overall Progress"
+    # print "#{((@@count.to_f/Page::DECKS.size)*100).round(2)}% ".red
+    # print "["
+    # print ("="*((@@count.to_f/Page::DECKS.size)*50.floor) + ">").ljust(50, ' ')
+    # puts "]"
     scrape_title
     puts "Saving: #{self.title}".center(64, ' ')
     puts ""
@@ -90,7 +91,8 @@ class Deck
         url TEXT,
         stars INTEGER,
         views INTEGER,
-        pdf TEXT)"
+        pdf TEXT,
+        client TEXT)"
 
       speaker_deck.execute "INSERT INTO decks (title,
         author,
@@ -99,14 +101,16 @@ class Deck
         url,
         stars,
         views,
-        pdf) VALUES (?,?,?,?,?,?,?,?)", [self.title,
-                                         self.author,
-                                         self.date,
-                                         self.category,
-                                         self.link,
-                                         self.stars,
-                                         self.views,
-                                         self.pdf]
+        pdf,
+        client) VALUES (?,?,?,?,?,?,?,?,?)", [self.title,
+                                            self.author,
+                                            self.date,
+                                            self.category,
+                                            self.link,
+                                            self.stars,
+                                            self.views,
+                                            self.pdf,
+                                            self.client]
     puts "Saved to database #{self.title}."
     ensure
       speaker_deck.close if speaker_deck
