@@ -47,18 +47,52 @@ class SpeakerDeck
   
   def update_page(page, decks, client)
     puts "Received update from #{client} (#{page}: #{decks.size})"
-    decks.each &:save
+    decks.each do |deck|
+      self.save(deck)
+    end
     PAGES[page] = :complete
   end
 
-  # def self.clean_up
-  #   PAGES.clear
-  # end
+  def save(deck)
+    begin
+      speaker_deck = SQLite3::Database.new( "speaker_deck_drb.db" )
+      speaker_deck.execute "CREATE TABLE IF NOT EXISTS decks(id INTEGER PRIMARY KEY AUTOINCREMENT,
+        title TEXT,
+        author TEXT,
+        date DATE,
+        category TEXT,
+        url TEXT,
+        stars INTEGER,
+        views INTEGER,
+        pdf TEXT,
+        client TEXT)"
+
+      speaker_deck.execute "INSERT INTO decks (title,
+        author,
+        date,
+        category,
+        url,
+        stars,
+        views,
+        pdf,
+        client) VALUES (?,?,?,?,?,?,?,?,?)", [deck.title,
+                                              deck.author,
+                                              deck.date,
+                                              deck.category,
+                                              deck.link,
+                                              deck.stars,
+                                              deck.views,
+                                              deck.pdf,
+                                              deck.client]
+    ensure
+      speaker_deck.close if speaker_deck
+    end
+  end
 
 end
 
-  speaker_deck = SQLite3::Database.new( "speaker_deck_drb.db" )
-        speaker_deck.execute "CREATE TABLE IF NOT EXISTS decks(id INTEGER PRIMARY KEY AUTOINCREMENT,
+speaker_deck = SQLite3::Database.new( "speaker_deck_drb.db" )
+speaker_deck.execute "CREATE TABLE IF NOT EXISTS decks(id INTEGER PRIMARY KEY AUTOINCREMENT,
           title TEXT,
           author TEXT,
           date DATE,
