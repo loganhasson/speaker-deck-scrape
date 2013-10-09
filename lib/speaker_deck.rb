@@ -22,10 +22,10 @@ class SpeakerDeck
     (1..max_page).each { |page| PAGES[page] = :pending }
   end
 
-  def get_next_page
+  def get_next_page(client_id)
     page = PAGES.find_index { |i| i == :pending }
-    puts "Client requesting page ##{page}"
     if page
+      puts "#{client_id} requesting page # #{page}"
       PAGES[page] = :crawling
       { 
         :page => page,

@@ -19,7 +19,18 @@ class Deck
     @client = client
     puts "Crawling #{@url}"
     puts ""
-    @noko_doc = Nokogiri::HTML(open(url))
+    done = false
+    wait_time = 0
+    while !done && wait_time < 30
+      begin
+        @noko_doc = Nokogiri::HTML(open(url))
+        done = true
+      rescue
+        wait_time += 2
+        sleep(wait_time)
+      end
+    end
+    puts "#{wait_time} seconds for last request.".red if wait_time != 0
     DECKS << self
     scrape
     @link = "https://speakerdeck.com#{@noko_doc.css('.talk-listing-meta .title a').attr("href").value}"
