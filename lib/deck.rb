@@ -3,24 +3,33 @@ require 'nokogiri'
 require 'pry'
 require 'chronic'
 require 'sqlite3'
+require 'colorize'
 
 class Deck
 
   attr_accessor :url, :noko_doc, :title, :author, :date, :stars, :views, :category, :link, :pdf
 
-  DECKS = []
+  @@count = 0
 
   def initialize(url)
     @url = url
     @noko_doc = Nokogiri::HTML(open(url))
     scrape
     @link = "https://speakerdeck.com#{@noko_doc.css('.talk-listing-meta .title a').attr("href").value}"
-    DECKS << self
     save
   end
   
   def scrape
+    system('clear')
+    @@count += 1
+    puts "Overall Progress"
+    print "#{((@@count.to_f/Page::DECKS.size)*100).round(2)}% ".red
+    print "["
+    print ("="*((@@count.to_f/Page::DECKS.size)*50.floor) + ">").ljust(50, ' ')
+    puts "]"
     scrape_title
+    puts "Saving: #{self.title}".center(64, ' ')
+    puts ""
     scrape_author
     scrape_date
     scrape_stars
@@ -78,20 +87,20 @@ class Deck
         category,
         url,
         stars,
-        views) VALUES (?,?,?,?,?,?,?,?)", [self.title,
-                                           self.author,
-                                           self.date,
-                                           self.category,
-                                           self.link,
-                                           self.stars,
-                                           self.views,
-                                           self.pdf]
+        views,
+        pdf) VALUES (?,?,?,?,?,?,?,?)", [self.title,
+                                         self.author,
+                                         self.date,
+                                         self.category,
+                                         self.link,
+                                         self.stars,
+                                         self.views,
+                                         self.pdf]
 
       puts self.title + " saved!"
     ensure
       speaker_deck.close if speaker_deck
     end
-    DECKS.delete(self)
   end
 
 end
